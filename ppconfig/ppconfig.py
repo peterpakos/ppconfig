@@ -23,7 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import absolute_import, print_function
 
 import os
-from errno import ENOENT
 import logging
 
 try:
@@ -44,8 +43,9 @@ class Config(object):
         self._config_path = os.path.join(self._config_dir, config_file)
 
         if not os.path.isfile(self._config_path):
-            self._log.critical('Configuration file not found: %s' % self._config_path)
-            raise IOError(ENOENT, 'Configuration file not found', self._config_path)
+            msg = 'Config file not found: %s' % self._config_path
+            self._log.error(msg)
+            raise IOError(msg)
 
         self._log.debug('Loading configuration from: %s' % self._config_path)
         self._config = configparser.ConfigParser()
@@ -53,11 +53,13 @@ class Config(object):
 
     def get(self, name, section='default'):
         if not self._config.has_section(section):
-            self._log.warning('Configuration file has no section: %s' % section)
-            return False
+            msg = 'Config file %s has no section: %s' % (self._config_path, section)
+            self._log.error(msg)
+            raise NameError(msg)
         if self._config.has_option(section, name):
             self._log.debug('Read: %s.%s' % (section, name))
             return self._config.get(section, name)
         else:
-            self._log.warning('Not found: %s.%s' % (section, name))
-            return False
+            msg = 'Config file %s has no entry: %s.%s' % (self._config_path, section, name)
+            self._log.error(msg)
+            raise NameError(msg)
