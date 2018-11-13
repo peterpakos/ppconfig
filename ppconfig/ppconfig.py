@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Configuration Manager
+"""Configuration helper
 
 Author: Peter Pakos <peter.pakos@wandisco.com>
 
@@ -30,10 +30,11 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
+log = logging.getLogger(__name__)
+
 
 class Config(object):
     def __init__(self, config_file, config_dir=None):
-        self._log = logging.getLogger(__name__)
 
         if config_dir:
             self._config_dir = config_dir
@@ -44,22 +45,22 @@ class Config(object):
 
         if not os.path.isfile(self._config_path):
             msg = 'Config file not found: %s' % self._config_path
-            self._log.error(msg)
+            log.error(msg)
             raise IOError(msg)
 
-        self._log.debug('Loading configuration from: %s' % self._config_path)
+        log.debug('Loading configuration from: %s' % self._config_path)
         self._config = configparser.ConfigParser()
         self._config.read(self._config_path)
 
     def get(self, name, section='default'):
         if not self._config.has_section(section):
             msg = 'Config file %s has no section: %s' % (self._config_path, section)
-            self._log.error(msg)
+            log.error(msg)
             raise NameError(msg)
         if self._config.has_option(section, name):
-            self._log.debug('Read: %s.%s' % (section, name))
+            log.debug('Read: %s.%s' % (section, name))
             return self._config.get(section, name)
         else:
             msg = 'Config file %s has no entry: %s.%s' % (self._config_path, section, name)
-            self._log.error(msg)
+            log.error(msg)
             raise NameError(msg)
