@@ -40,6 +40,16 @@ class Config(object):
         else:
             self._config_dir = os.path.expanduser(os.environ.get('XDG_CONFIG_HOME', '~/.config'))
 
+        if not os.path.exists(self._config_dir):
+            log.debug('Config directory does not exist, attempting to create it...')
+            try:
+                os.mkdir(self._config_dir)
+            except OSError as e:
+                log.error(e)
+                raise OSError('Failed to create config directory: %s' % self._config_dir)
+            else:
+                log.debug('Created config directory: %s' % self._config_dir)
+
         self._config_path = os.path.join(self._config_dir, config_file)
 
         if not os.path.isfile(self._config_path):
