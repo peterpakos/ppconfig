@@ -19,7 +19,16 @@ $ pip install --user ppconfig
 By default, configuration files are searched for in `~/.config/` (this can be overridden by class argument `config_dir` or [environment variable XDG_CONFIG_HOME](https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html)). If the config directory does not exist then it will be automatically created.
 
 ## Usage
-To read data from configuration file `~/.config/app_name`:
+Let's say we have `~/.config/app_name` with the following contents:
+```
+[default]
+var1 = First Data
+
+[section_name]
+var2 = Some other random data
+```
+
+To read both variables from this file:
 ```
 from ppconfig import Config
 
