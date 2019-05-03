@@ -45,7 +45,6 @@ class Config(object):
             try:
                 os.mkdir(self._config_dir)
             except OSError as e:
-                log.error(e)
                 raise OSError('Failed to create config directory: %s' % self._config_dir)
             else:
                 log.debug('Created config directory: %s' % self._config_dir)
@@ -54,7 +53,6 @@ class Config(object):
 
         if not os.path.isfile(self._config_path):
             msg = 'Config file not found: %s' % self._config_path
-            log.error(msg)
             raise IOError(msg)
 
         log.debug('Loading configuration from: %s' % self._config_path)
@@ -64,12 +62,10 @@ class Config(object):
     def get(self, name, section='default'):
         if not self._config.has_section(section):
             msg = 'Config file %s has no section: %s' % (self._config_path, section)
-            log.error(msg)
             raise NameError(msg)
         if self._config.has_option(section, name):
             log.debug('Read: %s.%s' % (section, name))
             return self._config.get(section, name)
         else:
             msg = 'Config file %s has no entry: %s.%s' % (self._config_path, section, name)
-            log.error(msg)
             raise NameError(msg)
