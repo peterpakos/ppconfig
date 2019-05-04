@@ -27,6 +27,7 @@ import logging
 try:
     import configparser
 except ImportError:
+    # noinspection PyUnresolvedReferences
     import ConfigParser as configparser
 
 log = logging.getLogger(__name__)
@@ -44,7 +45,7 @@ class Config(object):
             log.debug('Config directory does not exist, attempting to create it...')
             try:
                 os.mkdir(self._config_dir)
-            except OSError as e:
+            except OSError:
                 raise OSError('Failed to create config directory: %s' % self._config_dir)
             else:
                 log.debug('Created config directory: %s' % self._config_dir)
@@ -52,8 +53,7 @@ class Config(object):
         self._config_path = os.path.join(self._config_dir, config_file)
 
         if not os.path.isfile(self._config_path):
-            msg = 'Config file not found: %s' % self._config_path
-            raise IOError(msg)
+            raise IOError('Config file not found: %s' % self._config_path)
 
         log.debug('Loading configuration from: %s' % self._config_path)
         self._config = configparser.ConfigParser()
@@ -61,11 +61,9 @@ class Config(object):
 
     def get(self, name, section='default'):
         if not self._config.has_section(section):
-            msg = 'Config file %s has no section: %s' % (self._config_path, section)
-            raise NameError(msg)
+            raise NameError('Config file %s has no section: %s' % (self._config_path, section))
         if self._config.has_option(section, name):
             log.debug('Read: %s.%s' % (section, name))
             return self._config.get(section, name)
         else:
-            msg = 'Config file %s has no entry: %s.%s' % (self._config_path, section, name)
-            raise NameError(msg)
+            raise NameError('Config file %s has no entry: %s.%s' % (self._config_path, section, name))
